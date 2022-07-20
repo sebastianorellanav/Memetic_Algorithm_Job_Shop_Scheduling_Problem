@@ -8,7 +8,6 @@ if __name__ == '__main__':
 
     numMachines = len(jobs[0])
     numJobs = len(jobs)
-    print("Instancia Escogida:", 'instancias/3x3')
     print("Cantidad de Maquinas:", numMachines)
     print("Cantidad de Trabajos:", numJobs)
     printJobs(jobs)
