@@ -1,4 +1,6 @@
+from operator import le
 import random
+import numpy as np
 from traceback import print_tb
 from jobshopproblem import *
 
@@ -27,7 +29,7 @@ def recombination(ind1, ind2, jobs):
     while len(j) > 0:
         e = random.choice(j)
         j.remove(e)
-        if len(setJob1) < 2:
+        if len(setJob1) < numJobs/2:
             setJob1.append(e)
         else:
             setJob2.append(e)
@@ -35,7 +37,7 @@ def recombination(ind1, ind2, jobs):
     aux1 = setJob1*numMachines
     aux2 = setJob2*numMachines
     ### aqui ya tengo los job set ahora tengo que generar los hijos a partir de los padres
-    for p1, p2, i in zip(ind1, ind2, range(len(ind1))):
+    for p1, p2 in zip(ind1, ind2):
         if p1 in setJob1:
             child1.append(p1)
         else:
@@ -60,8 +62,6 @@ def generate_new_population(breeders, jobs, size_pop):
     newpop = []
     
     # recombination
-    i1 = -1
-    i2 = -1
     for t in range(int(size_pop/2)):
         aux= breeders[:]
         parent1 = random.choice(aux)
@@ -76,7 +76,7 @@ def generate_new_population(breeders, jobs, size_pop):
 
 
     #mutation
-    
+
     for j in range(len(pop)):
         newpop.append(local_improver(pop[j], jobs))
     
@@ -104,20 +104,26 @@ def update_population(pop, newpop, jobs):
 
 
 #Listo
-def apply_operator(ind, j):
-    swapIndex = random.randrange(len(ind))
-    ind[j], ind[swapIndex] = ind[swapIndex], ind[j]
+def apply_operator(ind):
+    j = random.randrange(len(ind))
+    i = random.randrange(len(ind))
+    while j == i:
+        i = random.randrange(len(ind))
+
+    if j > i:
+        ind[i:j+1] = random.sample(ind[i:j+1], len(ind[i:j+1]))
+    else:
+        ind[j:i+1] = random.sample(ind[j:i+1], len(ind[j:i+1]))
     return ind
 
 #Listo
 def local_improver(current, jobs):
-    for j in range(len(current)):
-        new = apply_operator(current, j)
-        
-        
+    iter = 40
+    while iter > 0:
+        new = apply_operator(current)
         if(makespan(jobs, new) < makespan(jobs, current)):
             current = new  
-    
+        iter -= 1
     return current
 
 def best(pop, jobs):
@@ -129,8 +135,15 @@ def best(pop, jobs):
 
     return pop_sorted[0][0]
 
-def converged(pop):
+def converged(current_std, previous_std):
+    error = 0.0001
+    b_n = 1/2*(np.power((current_std - previous_std), 2))
+
+    if b_n < error:
+        return True
+
     return False
+
 
 
 def do_generation(pop, jobs, size_pop):
@@ -174,15 +187,24 @@ def MA(size_pop=10, iter=100, jobs=[], numjobs=0, nummachines=0):
     pop = []
     if jobs == []:
         return []
-
+    a_i = []
+    current_std = 0
+    previous_std = 0
     #begin
     pop = generate_initial_population(size_pop, jobs, numjobs, nummachines)
-    while iter > 0:
+    while iter > 0: #agregar otra condición
         print("iteración n°: "+str(iter))
         pop = do_generation(pop, jobs, size_pop)
-        if(converged(pop)):
+        a_i.append(makespan(jobs,best(pop, jobs)))
+        current_std = np.std(a_i)
+        if len(a_i) >=20 and (converged(current_std, previous_std)):
+            print("restart population")
+            a_i = []
             pop = restart_population(pop, jobs, numjobs, nummachines)
-
+        previous_std = current_std
         iter-=1
         
     return pop
+
+
+

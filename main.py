@@ -12,7 +12,7 @@ if __name__ == '__main__':
     print("Cantidad de Trabajos:", numJobs)
     printJobs(jobs)
 
-    pop = MA(size_pop=10, iter=100, jobs=jobs, numjobs=numJobs, nummachines=numMachines)
+    pop = MA(size_pop=20, iter=500, jobs=jobs, numjobs=numJobs, nummachines=numMachines)
     print("\n\nPoblación de soluciones encontradas")
     print(pop)
     print("\n\nMejor Solución encontrada")
