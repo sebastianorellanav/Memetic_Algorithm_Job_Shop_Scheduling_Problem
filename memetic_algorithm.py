@@ -20,37 +20,36 @@ def select_from_population(pop, jobs):
 
 def recombination(ind1, ind2, jobs):
     numJobs = len(jobs)
-    numMachines = len(jobs[0])
     setJob1 = []
     setJob2 = []
     child1 = []
     child2 = []
-    j = list(range(numJobs))
-    while len(j) > 0:
-        e = random.choice(j)
-        j.remove(e)
-        if len(setJob1) < numJobs/2:
-            setJob1.append(e)
-        else:
-            setJob2.append(e)
-    
-    aux1 = setJob1*numMachines
-    aux2 = setJob2*numMachines
+    j = random.sample(list(range(numJobs)),numJobs)
+    setJob1 = j[:int(numJobs/2)]
+    setJob2 = j[int(numJobs/2):]
+
+    auxSetJob1 = setJob1.copy()
+    auxSetJob1.append(auxSetJob1[0])
+    auxSetJob1.pop(0)
+
+    auxSetJob2 = setJob2.copy()
+    auxSetJob2.append(auxSetJob2[0])
+    auxSetJob2.pop(0)
+
     ### aqui ya tengo los job set ahora tengo que generar los hijos a partir de los padres
     for p1, p2 in zip(ind1, ind2):
+        
         if p1 in setJob1:
             child1.append(p1)
         else:
-            c = random.choice(aux2)
-            aux2.remove(c)
-            child1.append(c)
+            i = auxSetJob2.index(p1) 
+            child1.append(setJob2[i]) 
         
         if p2 in setJob2:
             child2.append(p2)
         else:
-            c = random.choice(aux1)
-            aux1.remove(c)
-            child2.append(c)
+            i = auxSetJob1.index(p2)
+            child2.append(setJob1[i])
 
     return child1, child2
 
