@@ -5,8 +5,8 @@ def create_excel(name_sheet):
     columns_excel = pd.DataFrame({'Instancia': ['tamano poblacion', 'iteraciones', 'porcentaje de preservacion', 'umbral convergencia', 'iteraciones busqueda local', 'Makespan', 'Tiempo']})
     columns_excel = columns_excel.transpose()
     # crear el objeto ExcelWriter
-    excelBook = op.load_workbook('resultados.xlsx')
-    with pd.ExcelWriter('resultados.xlsx') as writer:
+    excelBook = op.load_workbook('resultados2.xlsx')
+    with pd.ExcelWriter('resultados2.xlsx') as writer:
         # Save your file workbook as base
         writer.book = excelBook
         writer.sheets = dict((ws.title, ws) for ws in excelBook.worksheets)
@@ -19,8 +19,8 @@ def create_excel(name_sheet):
 
 def write_result(result, name_sheet):
     result = result.transpose()
-    excelBook = op.load_workbook('resultados.xlsx')
-    with pd.ExcelWriter('resultados.xlsx') as writer:
+    excelBook = op.load_workbook('resultados2.xlsx')
+    with pd.ExcelWriter('resultados2.xlsx') as writer:
         # Save your file workbook as base
         writer.book = excelBook
         writer.sheets = dict((ws.title, ws) for ws in excelBook.worksheets)
